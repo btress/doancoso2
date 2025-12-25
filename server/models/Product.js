@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Product image is required'],
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return /^https?:\/\/.+/.test(v);
       },
       message: 'Please provide a valid image URL'
@@ -106,14 +106,14 @@ const productSchema = new mongoose.Schema({
 
 // Calculate discount price before saving
 // pre-save hook: calculate discountPrice if discount is set
-productSchema.pre('save', function() {
+productSchema.pre('save', function () {
   if (this.discount > 0) {
     this.discountPrice = this.price * (1 - this.discount / 100);
   }
 });
 
 // Virtual for final price
-productSchema.virtual('finalPrice').get(function() {
+productSchema.virtual('finalPrice').get(function () {
   return this.discountPrice || this.price;
 });
 

@@ -48,8 +48,8 @@ app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     message: 'iPhone Store API is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
@@ -58,7 +58,7 @@ app.get('/api/health', (req, res) => {
 
 // Root endpoint
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Welcome to iPhone Store API',
     documentation: '/api-docs', // Add Swagger later
     endpoints: {
@@ -72,9 +72,9 @@ app.get('/', (req, res) => {
 
 // 404 Handler
 app.use((req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    error: 'Endpoint not found' 
+  res.status(404).json({
+    success: false,
+    error: 'Endpoint not found'
   });
 });
 

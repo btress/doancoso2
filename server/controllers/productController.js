@@ -3,19 +3,19 @@ const Product = require('../models/Product');
 // Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const { 
-      page = 1, 
-      limit = 10, 
-      category, 
-      modelType, 
-      minPrice, 
-      maxPrice, 
-      sort = 'createdAt', 
-      order = 'desc' 
+    const {
+      page = 1,
+      limit = 10,
+      category,
+      modelType,
+      minPrice,
+      maxPrice,
+      sort = 'createdAt',
+      order = 'desc'
     } = req.query;
-    
+
     const query = {};
-    
+
     // Build query
     if (category) query.category = category;
     if (modelType) query.modelType = modelType;
@@ -24,19 +24,19 @@ exports.getAllProducts = async (req, res) => {
       if (minPrice) query.price.$gte = Number(minPrice);
       if (maxPrice) query.price.$lte = Number(maxPrice);
     }
-    
+
     // Calculate pagination
     const skip = (page - 1) * limit;
     const sortOption = { [sort]: order === 'desc' ? -1 : 1 };
-    
+
     // Execute query
     const products = await Product.find(query)
       .skip(skip)
       .limit(Number(limit))
       .sort(sortOption);
-    
+
     const total = await Product.countDocuments(query);
-    
+
     res.json({
       success: true,
       count: products.length,
@@ -57,14 +57,14 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    
+
     if (!product) {
       return res.status(404).json({
         success: false,
         error: 'Product not found'
       });
     }
-    
+
     res.json({
       success: true,
       data: product
@@ -82,7 +82,7 @@ exports.createProduct = async (req, res) => {
   try {
     const product = new Product(req.body);
     await product.save();
-    
+
     res.status(201).json({
       success: true,
       data: product
@@ -104,14 +104,14 @@ exports.updateProduct = async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
-    
+
     if (!product) {
       return res.status(404).json({
         success: false,
         error: 'Product not found'
       });
     }
-    
+
     res.json({
       success: true,
       data: product
@@ -128,14 +128,14 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-    
+
     if (!product) {
       return res.status(404).json({
         success: false,
         error: 'Product not found'
       });
     }
-    
+
     res.json({
       success: true,
       message: 'Product deleted successfully'
@@ -154,7 +154,7 @@ exports.getFeaturedProducts = async (req, res) => {
     const products = await Product.find()
       .limit(12)
       .sort({ createdAt: -1 });
-    
+
     res.json({
       success: true,
       count: products.length,
@@ -174,7 +174,7 @@ exports.searchProducts = async (req, res) => {
     const products = await Product.find({
       $text: { $search: req.params.query }
     }).limit(10);
-    
+
     res.json({
       success: true,
       count: products.length,
@@ -211,14 +211,14 @@ exports.getProductsByCategory = async (req, res) => {
 exports.getRelatedProducts = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    
+
     if (!product) {
       return res.status(404).json({
         success: false,
         error: 'Product not found'
       });
     }
-    
+
     const relatedProducts = await Product.find({
       _id: { $ne: product._id },
       $or: [
@@ -226,7 +226,7 @@ exports.getRelatedProducts = async (req, res) => {
         { modelType: product.modelType }
       ]
     }).limit(4);
-    
+
     res.json({
       success: true,
       data: relatedProducts
@@ -244,14 +244,14 @@ exports.updateStock = async (req, res) => {
   try {
     const { operation, quantity } = req.body;
     const product = await Product.findById(req.params.id);
-    
+
     if (!product) {
       return res.status(404).json({
         success: false,
         error: 'Product not found'
       });
     }
-    
+
     if (operation === 'increase') {
       product.stock += quantity;
     } else if (operation === 'decrease') {
@@ -265,9 +265,9 @@ exports.updateStock = async (req, res) => {
     } else {
       product.stock = quantity;
     }
-    
+
     await product.save();
-    
+
     res.json({
       success: true,
       data: product

@@ -216,7 +216,7 @@ export default function AdminPanel() {
 
         <section className="bg-white p-4 rounded border">
           <h3 className="font-semibold mb-3">Danh sách sản phẩm</h3>
-            <div className="overflow-auto max-h-64">
+          <div className="overflow-auto max-h-64">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
