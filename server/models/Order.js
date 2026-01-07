@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
   orderId: {
     type: String,
-    unique: true,
-    required: true
+    unique: true
   },
   customer: {
     name: {
@@ -36,8 +35,7 @@ const orderSchema = new mongoose.Schema({
   items: [{
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
-      required: true
+      ref: 'Product'
     },
     name: String,
     quantity: {
@@ -103,7 +101,7 @@ const orderSchema = new mongoose.Schema({
 });
 
 // Generate order ID before saving
-orderSchema.pre('save', async function(next) {
+orderSchema.pre('save', async function() {
   if (!this.orderId) {
     const date = new Date();
     const year = date.getFullYear().toString().slice(-2);
@@ -123,7 +121,7 @@ orderSchema.pre('save', async function(next) {
     
     this.orderId = `ORD${year}${month}${day}${sequence}`;
   }
-  next();
+  // Trả về Promise implicitly
 });
 
 const Order = mongoose.model('Order', orderSchema);

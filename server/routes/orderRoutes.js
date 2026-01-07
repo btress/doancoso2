@@ -11,6 +11,7 @@ router.post(
   [
     body('customer.name').notEmpty(),
     body('customer.email').isEmail(),
+    body('customer.phone').notEmpty(),
     body('items').isArray({ min: 1 }),
     body('totalAmount').isNumeric()
   ],
@@ -18,5 +19,6 @@ router.post(
 );
 
 module.exports = router;
+
 
 

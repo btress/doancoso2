@@ -139,9 +139,9 @@ export default function Cart() {
                 </div>
               </div>
             </div>
-            <button className="w-full bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-colors mt-6">
+            <a href="/checkout" className="w-full inline-block text-center bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-colors mt-6">
               Proceed to Checkout
-            </button>
+            </a>
             <Link
               to="/products"
               className="block text-center mt-4 text-gray-600 hover:text-black transition-colors"

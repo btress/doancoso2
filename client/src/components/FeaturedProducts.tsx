@@ -64,7 +64,7 @@ const FeaturedProducts = () => {
           </p>
         </motion.div>
 
-          <div className="relative group">
+        <div className="relative group">
           {/* Carousel Wrapper */}
           <div className="overflow-hidden" ref={containerRef}>
             <motion.div
@@ -83,8 +83,8 @@ const FeaturedProducts = () => {
                   whileHover={{ y: -6, scale: 1.01 }}
                   style={{
                     width: containerWidth
-                      ? `${containerWidth / itemsPerView - ( (gapPx * (itemsPerView - 1)) / itemsPerView )}px`
-                      : `calc(${itemWidth}% - ${( (gapPx * (itemsPerView - 1)) / itemsPerView )}px)`
+                      ? `${containerWidth / itemsPerView - ((gapPx * (itemsPerView - 1)) / itemsPerView)}px`
+                      : `calc(${itemWidth}% - ${((gapPx * (itemsPerView - 1)) / itemsPerView)}px)`
                   }}
                   variants={itemVariants}
                   initial="hidden"

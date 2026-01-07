@@ -48,7 +48,8 @@ export const cartApi = {
     token: string,
     payload: { productId: string; quantity: number; color?: string; storage?: string }
   ) => request('/cart', { method: 'POST', body: payload, token }),
-  remove: (token: string, itemId: string) => request(`/cart/${itemId}`, { method: 'DELETE', token })
+  remove: (token: string, itemId: string) => request(`/cart/${itemId}`, { method: 'DELETE', token }),
+  clear: (token: string) => request('/cart', { method: 'DELETE', token })
 };
 
 export const commentApi = {
@@ -58,6 +59,15 @@ export const commentApi = {
 };
 
 export const orderApi = {
-  list: (token?: string) => request('/orders', token ? { token } : {})
+  list: (token?: string) => request('/orders', token ? { token } : {}),
+  create: (payload: any) => request('/orders', { method: 'POST', body: payload })
+};
+
+export const messageApi = {
+  list: (userId?: string) => request(`/messages${userId ? `?userId=${userId}` : ''}`),
+  send: (payload: { senderName: string; senderEmail: string; content: string; senderType: string; userId?: string }) =>
+    request('/messages', { method: 'POST', body: payload }),
+  markAsRead: (messageId: string) => request(`/messages/${messageId}/read`, { method: 'PUT' }),
+  delete: (messageId: string) => request(`/messages/${messageId}`, { method: 'DELETE' })
 };
 

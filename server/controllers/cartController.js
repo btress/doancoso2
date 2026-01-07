@@ -77,3 +77,13 @@ exports.removeItem = async (req, res) => {
   }
 };
 
+exports.clearCart = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    user.cart = [];
+    await user.save();
+    res.json({ success: true, data: [] });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};

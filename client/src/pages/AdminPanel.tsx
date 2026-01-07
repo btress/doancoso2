@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { productApi } from '../services/api';
+import { productApi, orderApi } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 // A lightweight, standalone admin panel that is not tied to the main site layout.
@@ -11,7 +11,9 @@ export default function AdminPanel() {
   const [adminToken, setAdminToken] = useState<string | null>(localStorage.getItem('adminToken'));
   const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
   const [form, setForm] = useState<any>({
     name: '',
     price: 0,
@@ -33,6 +35,17 @@ export default function AdminPanel() {
         setProducts(res?.data ?? res ?? []);
       } catch (err: any) {
         toast.error(err?.message || 'Không thể tải sản phẩm');
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await orderApi.list();
+        setOrders(res?.data ?? res ?? []);
+      } catch (err: any) {
+        toast.error(err?.message || 'Không thể tải đơn hàng');
       }
     })();
   }, []);
@@ -121,12 +134,30 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen bg-white p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end mb-4 items-center space-x-2">
+          <a href="/admin-chat" className="px-3 py-1 bg-black text-white rounded">Open Chat</a>
           <button className="px-3 py-1 border rounded" onClick={() => { localStorage.removeItem('adminToken'); setAdminToken(null); navigate('/admin-login'); }}>Logout admin</button>
         </div>
         <h1 className="text-3xl font-bold mb-4">Admin Panel (Standalone)</h1>
         <p className="text-sm text-gray-600 mb-6">Trang quản trị tách biệt — không dùng Header/Footer của trang chính.</p>
 
+        <div className="flex gap-4 mb-6">
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`px-4 py-2 rounded ${activeTab === 'products' ? 'bg-black text-white' : 'border border-gray-300'}`}
+          >
+            Sản phẩm
+          </button>
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`px-4 py-2 rounded ${activeTab === 'orders' ? 'bg-black text-white' : 'border border-gray-300'}`}
+          >
+            Đơn hàng khách hàng
+          </button>
+        </div>
+
+        {activeTab === 'products' && (
+        <>
         <section className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
           <h2 className="text-2xl font-semibold mb-3">Thêm sản phẩm</h2>
           <form onSubmit={async (e) => {
@@ -244,6 +275,84 @@ export default function AdminPanel() {
         </section>
 
         <p className="text-xs text-gray-500 mt-6">Ghi chú: Trang này là một admin panel độc lập. Nếu muốn tích hợp sâu hơn (xác thực, phân quyền), tôi có thể thêm chức năng xác thực và layout admin riêng.</p>
+        </>
+        )}
+
+        {activeTab === 'orders' && (
+        <section className="bg-white p-4 rounded border">
+          <h3 className="font-semibold mb-4 text-lg">Danh sách đơn hàng khách hàng</h3>
+          <div className="overflow-auto">
+            <table className="min-w-full text-sm border-collapse">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="border px-3 py-2 text-left">ID Đơn hàng</th>
+                  <th className="border px-3 py-2 text-left">Khách hàng</th>
+                  <th className="border px-3 py-2 text-left">Email</th>
+                  <th className="border px-3 py-2 text-left">SĐT</th>
+                  <th className="border px-3 py-2 text-left">Địa chỉ</th>
+                  <th className="border px-3 py-2 text-left">Sản phẩm</th>
+                  <th className="border px-3 py-2 text-left">Số lượng</th>
+                  <th className="border px-3 py-2 text-left">Tổng tiền</th>
+                  <th className="border px-3 py-2 text-left">PT thanh toán</th>
+                  <th className="border px-3 py-2 text-left">Trạng thái</th>
+                  <th className="border px-3 py-2 text-left">Ngày tạo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.length === 0 ? (
+                  <tr>
+                    <td colSpan={11} className="border px-3 py-4 text-center text-gray-500">
+                      Không có đơn hàng nào
+                    </td>
+                  </tr>
+                ) : (
+                  orders.map((order) => (
+                    <tr key={order._id} className="border-t hover:bg-gray-50">
+                      <td className="border px-3 py-2 font-semibold">{order.orderId}</td>
+                      <td className="border px-3 py-2">{order.customer?.name}</td>
+                      <td className="border px-3 py-2">{order.customer?.email}</td>
+                      <td className="border px-3 py-2">{order.customer?.phone}</td>
+                      <td className="border px-3 py-2 text-xs">
+                        {order.customer?.address?.street && `${order.customer.address.street}, `}
+                        {order.customer?.address?.city && `${order.customer.address.city}, `}
+                        {order.customer?.address?.state && `${order.customer.address.state}, `}
+                        {order.customer?.address?.zipCode}
+                      </td>
+                      <td className="border px-3 py-2 text-xs">
+                        {order.items?.map((item: any) => `${item.name}`).join('; ')}
+                      </td>
+                      <td className="border px-3 py-2">
+                        {order.items?.reduce((sum: number, item: any) => sum + item.quantity, 0)}
+                      </td>
+                      <td className="border px-3 py-2 font-semibold">${order.totalAmount?.toFixed(2)}</td>
+                      <td className="border px-3 py-2 text-xs">
+                        {order.paymentMethod === 'cash_on_delivery' && 'Tiền mặt'}
+                        {order.paymentMethod === 'credit_card' && 'Thẻ tín dụng'}
+                        {order.paymentMethod === 'paypal' && 'PayPal'}
+                        {order.paymentMethod === 'apple_pay' && 'Apple Pay'}
+                      </td>
+                      <td className="border px-3 py-2">
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                          order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          order.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
+                          order.status === 'processing' ? 'bg-purple-100 text-purple-800' :
+                          order.status === 'shipped' ? 'bg-indigo-100 text-indigo-800' :
+                          order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="border px-3 py-2 text-xs">{new Date(order.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+        )}
+
       </div>
     </div>
   );

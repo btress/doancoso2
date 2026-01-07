@@ -98,7 +98,7 @@ const Technology = () => {
                 whileHover={{ y: -8, scale: 1.03 }}
                 className="bg-gray-100 rounded-xl p-8 sm:p-10 shadow-xl hover:shadow-2xl transition-all duration-300 border-4 border-gray-400 overflow-hidden"
               >
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-black mb-6 shadow-lg`}> 
+                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-black mb-6 shadow-lg`}>
                   <Icon className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-extrabold text-gray-900 mb-3">{tech.title}</h3>

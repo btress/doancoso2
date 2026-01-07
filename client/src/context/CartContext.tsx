@@ -26,6 +26,7 @@ type CartContextValue = {
   loading: boolean;
   addOrUpdate: (payload: { productId: string; quantity: number; color?: string; storage?: string }) => Promise<void>;
   remove: (itemId: string) => Promise<void>;
+  clear: () => Promise<void>;
 };
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
@@ -60,8 +61,21 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setItems(res.data);
   };
 
+  const clear = async () => {
+    if (!token) {
+      setItems([]);
+      return;
+    }
+    try {
+      await cartApi.clear(token);
+    } catch (err) {
+      console.error('Error clearing cart:', err);
+    }
+    setItems([]);
+  };
+
   return (
-    <CartContext.Provider value={{ items, loading, addOrUpdate, remove }}>
+    <CartContext.Provider value={{ items, loading, addOrUpdate, remove, clear }}>
       {children}
     </CartContext.Provider>
   );

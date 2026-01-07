@@ -39,6 +39,7 @@ export default function Register() {
       toast.success('Account created successfully!');
       navigate('/');
     } catch (error) {
+      console.error(error);
       toast.error('Registration failed. Please try again.');
     }
   };
@@ -48,7 +49,7 @@ export default function Register() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="mx-auto w-16 h-16 bg-black rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-xl">i</span>
+            <img src="https://substackcdn.com/image/fetch/$s_!G1lk!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F8ed3d547-94ff-48e1-9f20-8c14a7030a02_2000x2000.jpeg" alt="iPhone Store" className="w-8 h-8 rounded-md object-cover" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             Create your account
