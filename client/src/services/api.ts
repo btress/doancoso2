@@ -60,7 +60,8 @@ export const commentApi = {
 
 export const orderApi = {
   list: (token?: string) => request('/orders', token ? { token } : {}),
-  create: (payload: any) => request('/orders', { method: 'POST', body: payload })
+  create: (payload: any) => request('/orders', { method: 'POST', body: payload }),
+  stats: () => request('/orders/stats')
 };
 
 export const messageApi = {

@@ -6,6 +6,9 @@ const router = express.Router();
 
 router.get('/', orderController.getOrders);
 
+// Get order statistics
+router.get('/stats', orderController.getOrderStats);
+
 router.post(
   '/',
   [

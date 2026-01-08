@@ -81,6 +81,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
+/* eslint-disable react-refresh/only-export-components */
 export const useCart = () => {
   const ctx = useContext(CartContext);
   if (!ctx) {

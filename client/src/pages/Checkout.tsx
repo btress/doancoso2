@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useForm } from 'react-hook-form';
@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { orderApi } from '../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { QrCode, CheckCircle } from 'lucide-react';
 
 type FormData = {
   name: string;
@@ -24,6 +25,7 @@ export default function Checkout() {
   const { items, clear, remove } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
 
   const subtotal = items.reduce((s, it) => s + (it.product?.discountPrice ?? it.product?.price ?? 0) * it.quantity, 0);
   const tax = subtotal * 0.08;
@@ -173,18 +175,48 @@ export default function Checkout() {
               <h2 className="font-semibold mb-2">Payment Method</h2>
               <div className="space-y-2">
                 <label className="flex items-center">
-                  <input {...register('paymentMethod')} type="radio" value="credit_card" className="mr-2" /> Credit / Debit Card
+                  <input {...register('paymentMethod')} type="radio" value="credit_card" className="mr-2" onChange={(e) => setPaymentMethod(e.target.value)} /> Credit / Debit Card
                 </label>
                 <label className="flex items-center">
-                  <input {...register('paymentMethod')} type="radio" value="paypal" className="mr-2" /> PayPal
+                  <input {...register('paymentMethod')} type="radio" value="paypal" className="mr-2" onChange={(e) => setPaymentMethod(e.target.value)} /> PayPal
                 </label>
                 <label className="flex items-center">
-                  <input {...register('paymentMethod')} type="radio" value="apple_pay" className="mr-2" /> Apple Pay
+                  <input {...register('paymentMethod')} type="radio" value="apple_pay" className="mr-2" onChange={(e) => setPaymentMethod(e.target.value)} /> Apple Pay
                 </label>
                 <label className="flex items-center">
-                  <input {...register('paymentMethod')} type="radio" value="cash_on_delivery" className="mr-2" defaultChecked /> Cash on Delivery
+                  <input {...register('paymentMethod')} type="radio" value="vietqr" className="mr-2" onChange={(e) => setPaymentMethod(e.target.value)} /> 
+                  <QrCode className="w-4 h-4 mr-1" /> VietQR (Chuyển khoản)
+                </label>
+                <label className="flex items-center">
+                  <input {...register('paymentMethod')} type="radio" value="cash_on_delivery" className="mr-2" defaultChecked onChange={(e) => setPaymentMethod(e.target.value)} /> Cash on Delivery
                 </label>
               </div>
+              
+              {/* VietQR Payment Section */}
+              {paymentMethod === 'vietqr' && (
+                <div className="mt-4 p-4 bg-white rounded border border-green-200">
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-green-700 mb-2">
+                      <QrCode className="w-4 h-4 inline mr-1" />
+                      Quét mã QR để thanh toán
+                    </p>
+                    <img 
+                      src={`https://img.vietqr.io/image/MB-0785878744-qr_only.png?amount=${Math.round(total * 24000)}&addInfo=AppleStore ${new Date().toLocaleDateString('vi-VN')}`}
+                      alt="VietQR Payment"
+                      className="w-48 h-48 mx-auto rounded-lg border"
+                    />
+                    <div className="mt-3 text-sm">
+                      <p className="font-medium">Ngân hàng: MB Bank</p>
+                      <p className="font-medium">Số tài khoản: 0785878744</p>
+                      <p className="font-bold text-lg text-green-600 mt-1">{Math.round(total * 24000).toLocaleString()} VND</p>
+                    </div>
+                    <div className="mt-3 flex items-center justify-center text-green-600 text-sm">
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Sau khi chuyển khoản, admin sẽ xác nhận đơn hàng
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
